@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Manner - 데모 웹페이지</title>
+    <!-- Tailwind CSS CDN 포함 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f8f8;
+            overflow-x: hidden;
+            /* 가로 스크롤 방지 */
+        }
+
+        /* 확정시안.jpg에서 샘플링한 색상 */
+        .color-primary-text {
+            color: #4a4a4a;
+            /* 기본 텍스트 색상 */
+        }
+
+        .color-secondary-text {
+            color: #888888;
+            /* 보조 텍스트 색상 */
+        }
+
+        .color-accent-purple {
+            color: #9C27B0;
+            /* 강조 보라색 (다운로드 텍스트 등) */
+        }
+
+        .color-cta-pink {
+            color: #E91E63;
+            /* CTA 버튼 텍스트 색상 */
+        }
+
+        /* 메인 섹션 배경색 번갈아 적용 */
+        main section:nth-of-type(odd) {
+            background-color: #ffffff;
+            /* 밝은 회색 또는 흰색 */
+        }
+
+        main section:nth-of-type(even) {
+            background-color: #FAFAFA;
+            /* 연보라색 계열 */
+        }
+
+        .hero-section {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            color: white;
+            /* 텍스트 색상을 흰색으로 변경 */
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('images/Gemini_Generated_Image.png');
+            /* 배경 이미지와 오버레이 적용 */
+            background-size: cover;
+            background-position: center;
+            /* 이미지를 중앙에 배치 */
+            background-repeat: no-repeat;
+            /* 핸드폰 이미지를 위한 충분한 하단 공간 확보 */
+            padding-top: 100px;
+            padding-bottom: 250px;
+        }
+
+        /* 히어로 섹션 텍스트 및 버튼 스타일 */
+        .hero-text-overlay {
+            position: relative;
+            z-index: 10;
+            margin-top: 0;
+            /* 배경 이미지 내에서 직접 조절되도록 마진 초기화 */
+            /* 텍스트와 버튼이 이미지의 상단에 배치되도록 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            /* 상단 정렬 */
+            height: 100%;
+            /* 부모 섹션 높이만큼 차지 */
+            padding-top: 50px;
+            /* 이미지 내에서 텍스트 상단 여백 */
+        }
+
+        /* 핸드폰 이미지를 섹션 내부로 재배치 */
+        .hero-text-overlay .phone-image {
+            position: relative;
+            /* 상대 위치로 변경 */
+            width: 300px;
+            /* 크기 조정 */
+            margin-top: 50px;
+            /* 텍스트와의 간격 조정 */
+        }
+
+        .hero-text-overlay h1,
+        .hero-text-overlay p {
+            color: #4a4a4a;
+            /* 확정시안의 텍스트 색상 유지 */
+        }
+
+        .hero-button {
+            background-color: white;
+            color: #E91E63;
+            /* CTA 핑크색 */
+            padding: 12px 32px;
+            border-radius: 9999px;
+            /* 완전 둥근 */
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .hero-button:hover {
+            background-color: #f0f0f0;
+            transform: scale(1.05);
+        }
+
+        /* 일반 이미지 섹션의 최대 너비 */
+        .image-section-max-width {
+            max-width: 1000px;
+            /* 확정시안 이미지들이 들어갈 적절한 너비 */
+        }
+
+        /* 개별 휴대폰 이미지 크기 조정 */
+        .phone-image {
+            width: 200px;
+            /* 작은 화면에서 각 휴대폰 이미지 너비 */
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 후기평가 섹션 타이틀 배경색 */
+        .review-section-title-bg {
+            background-color: #f3e5f5;
+            /* 이미지에서 추출한 연보라색 배경 */
+            padding-top: 2rem;
+            /* 이미지 상단 패딩 */
+            padding-bottom: 2rem;
+            /* 이미지 하단 패딩 */
+            margin-bottom: 2.5rem;
+            /* 이미지와 콘텐츠 사이 간격 */
+        }
+
+        .review-section-main-title {
+            color: #8B5CF6;
+            /* 메인 타이틀 색상 (진한 보라) */
+        }
+
+        /* 새로운 비매너 텍스트 색상 */
+        .text-purple-highlight {
+            color: #752875;
+        }
+
+        /* 나란히 보이는 이미지 섹션의 배경색 */
+        .phone-display-card {
+            background-color: #F2EEF2;
+            /* 요청된 배경 색상 */
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Banner Section 1 */
+        .banner-section-1 {
+            background-color: #AF58AF;
+            color: white;
+            text-align: center;
+            margin: auto;
+            padding: auto;
+            font-size: 2.5em;
+            line-height: 1.5;
+        }
+
+        /* Banner Section 2 */
+        .banner-section-2 {
+            background-color: #AF58AF;
+            color: white;
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 50px auto;
+            max-width: 90%;
+        }
+
+        .banner-section-2 p {
+            font-size: 1em;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .banner-section-2 button {
+            background-color: white;
+            color: #AF58AF;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            white-space: nowrap;
+            margin-top: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .banner-section-2 {
+                flex-direction: row;
+                padding: 30px 50px;
+                justify-content: space-between;
+            }
+        }
+
+
+        @media (min-width: 768px) {
+            .banner-section-2 button {
+                margin-top: 0;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .hero-section {
+                height: 700px;
+                /* 중간 화면에서 높이 조정 */
+                padding-top: 100px;
+            }
+
+            .hero-text-overlay {
+                padding-top: 80px;
+            }
+
+            .phone-image {
+                width: 250px;
+                /* 중간 화면에서 각 휴대폰 이미지 너비 */
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .hero-section {
+                height: 800px;
+                /* 큰 화면에서 높이 조정 */
+                padding-top: 120px;
+            }
+
+            .hero-text-overlay {
+                padding-top: 100px;
+            }
+
+            .phone-image {
+                width: 300px;
+                /* 큰 화면에서 각 휴대폰 이미지 너비 */
+            }
+        }
+    </style>
+</head>
+
+<body class="antialiased leading-normal tracking-wide">
+
+    <!-- Top Header -->
+    <div class="bg-white py-4 shadow-sm absolute top-0 left-0 w-full z-30">
+        <div class="container mx-auto px-4 w-full flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <!-- 확정시안.jpg의 The Manner 로고 - 실제 로고 이미지로 교체 필요 -->
+                <img src="images/logo.png" alt="The Manner Logo" class="h-8 md:h-10">
+                <span class="text-gray-800 text-xl md:text-2xl font-bold">The Manner</span>
+            </div>
+            <a href="#" class="text-custom-purple text-md md:text-lg font-medium hover:underline">
+                <span class="text-purple-highlight">다운로드</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-text-overlay">
+            <h1 class="text-2xl md:text-4xl font-extrabold mb-4 text-gray-800 animate-fade-in-up">
+                가벼운 만남에 지치셨나요?
+            </h1>
+            <p class="text-md md:text-lg mb-8 opacity-90 text-gray-700 animate-fade-in-up delay-200">
+                매너가 인연을 만든다<br>선한 남녀들이 모인곳, 더매너
+            </p>
+            <button class="hero-button text-lg animate-fade-in-up delay-400">
+                더매너 시작하기 >
+            </button>
+            <div class="flex flex-col items-center phone-display-card">
+                <img src="./images/iPhone 15 Pro - White flatten.png" alt="핸드폰 화면" class="phone-image">
+            </div>
+        </div>
+    </section>
+    <!-- Section: 매너·외모·스펙이 검증된 이성과의 만남 -->
+    <section class="banner-section-1">
+        매너·외모·스펙이<br>
+        검증된 이성과의 만남
+    </section>
+
+    <!-- Content Sections start here, with white background to separate from hero -->
+    <main class="bg-white py-16 md:py-24 relative z-10">
+        <div class="container mx-auto px-4">
+
+            <!-- Section: 후기평가를 통한 비매너/프사기 회원 강제 퇴출 -->
+            <section class="mb-20 md:mb-32 text-center">
+                <div class="mb-10 max-w-2xl mx-auto text-left"> <!-- Changed to text-left -->
+                    <p class="text-gray-600 text-lg md:text-md mb-2">
+                        • 매너점수 하락 누적 시 강제 퇴출
+                    </p>
+                    <p class="text-gray-600 text-lg md:text-md">
+                        • 실물점수(실물과 사진 차이) 하락 누적 시 강제 퇴출
+                    </p>
+                </div>
+                <!-- Two images side-by-side -->
+                <div class="flex flex-col md:flex-row justify-center items-start gap-8 mt-10">
+                    <div class="flex flex-col items-center phone-display-card"> <!-- Added background color class -->
+                        <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">
+                            후기평가를 통한<br><span class="text-purple-highlight">비매너</span> 회원 강제 퇴출
+                        </h3>
+                        <img src="images/image 22.png" alt="비매너 회원 강제 퇴출" class="phone-image">
+                    </div>
+                    <div class="flex flex-col items-center phone-display-card"> <!-- Added background color class -->
+                        <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">후기평가를 통한<br><span
+                                class="text-purple-highlight">프사기</span> 회원 강제 퇴출</h3>
+                        <img src="images/image 23.png" alt="프사기 회원 강제 퇴출" class="phone-image">
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- Section: 문신·흡연자 가입 금지 & 커플신청을 통한 다중만남 방지 -->
+            <section class="mb-20 md:mb-32 text-center">
+                <div class="mb-10 max-w-2xl mx-auto text-left">
+                    <p class="text-gray-600 text-lg md:text-md mb-2">
+                        • 문신·흡연자 가입 금지, 기한가입 적발 시 강제 퇴출
+                    </p>
+                    <p class="text-gray-600 text-lg md:text-md">
+                        • 남녀 합의 하 커플 신청 시 새로운 이성 소개 중단
+                    </p>
+                </div>
+                <!-- Two images side-by-side -->
+                <div class="flex flex-col md:flex-row justify-center items-stretch gap-8 mt-10">
+                    <div class="flex flex-col items-center phone-display-card"> <!-- Added background color class -->
+                        <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">
+                            <span class="text-purple-highlight">문신 ·흡연자 </span> 가입 금지
+                        </h3>
+                        <img src="images/image 25.png" alt="비매너 회원 강제 퇴출" class="phone-image">
+                    </div>
+                    <div class="flex flex-col items-center phone-display-card"> <!-- Added background color class -->
+                        <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">커플신청을 통한<br><span
+                                class="text-purple-highlight">다중만남 방지</span></h3>
+                        <img src="images/image 24.png" alt="프사기 회원 강제 퇴출" class="phone-image">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: 직업·경제력 서류검증 & 만남 보장 -->
+
+            <section class="mb-20 md:mb-32 text-center">
+                <div class="mb-10 max-w-2xl mx-auto text-left">
+                    <p class="text-gray-600 text-lg md:text-md mb-2">
+                        • 원천징수영수증·재직증명서·등기서류 등을 전문인력이 검토
+                    </p>
+                    <p class="text-gray-600 text-lg md:text-md">
+                        • 실제 만남이 성사되지 않을 시 만남권 100% 환급
+                    </p>
+                </div>
+                <!-- Two images side-by-side -->
+                <div class="flex flex-col md:flex-row justify-center items-stretch gap-8 mt-10">
+                    <div class="flex flex-col items-center phone-display-card"> <!-- Added background color class -->
+                        <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">
+                            직업·경제력 <span class="text-purple-highlight">서류검증</span>
+                        </h3>
+                        <img src="images/image 27.png" alt="비매너 회원 강제 퇴출" class="phone-image">
+                    </div>
+                    <div class="flex flex-col items-center phone-display-card"> <!-- Added background color class -->
+                        <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">만남 <span
+                                class="text-purple-highlight">보장</span></h3>
+                        <img src="images/image 26.png" alt="프사기 회원 강제 퇴출" class="phone-image">
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Call to Action Footer Section -->
+    <section class="banner-section-2">
+        <p>매너를 갖춘 분이라면 지금 바로 인연을 찾아보세요!</p>
+        <button>더매너 앱 다운로드 ></button>
+    </section>
+
+    <!-- Minimal Copyright Footer -->
+    <footer class="bg-white text-gray-400 py-8 text-center border-t border-gray-100">
+        <div class="container mx-auto px-4">
+            <p>&copy; 2025 The Manner. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="./js/script.js"></script>
+</body>
+
+</html>
