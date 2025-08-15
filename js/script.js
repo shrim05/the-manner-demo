@@ -1,65 +1,57 @@
-// public/js/script.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 모바일 메뉴 토글 기능
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
+    // 섹션 애니메이션을 위한 Intersection Observer 설정
+    const sections = document.querySelectorAll('main section, .banner-section-1, .banner-section-2');
 
-    if (mobileMenuButton && mobileMenu) {
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
+    const observerOptions = {
+        root: null, // 뷰포트를 루트로 사용
+        rootMargin: '0px',
+        threshold: 0.1 // 섹션의 10%가 보이면 콜백 실행
+    };
 
-        // 메뉴 아이템 클릭 시 메뉴 닫기 (모바일)
-        const mobileMenuItems = mobileMenu.querySelectorAll('a, button');
-        mobileMenuItems.forEach(item => {
-            item.addEventListener('click', () => {
-                mobileMenu.classList.add('hidden');
-            });
-        });
-    }
-
-    // 부드러운 스크롤 기능 (네비게이션 링크 클릭 시)
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-
-            const targetId = this.getAttribute('href');
-            const targetElement = document.querySelector(targetId);
-
-            if (targetElement) {
-                targetElement.scrollIntoView({
-                    behavior: 'smooth'
-                });
+    const sectionObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // 섹션이 뷰포트에 들어왔을 때 애니메이션 클래스 추가
+                entry.target.classList.add('animate-fade-in-up', 'opacity-100', 'translate-y-0');
+                entry.target.classList.remove('opacity-0', 'translate-y-10');
+                observer.unobserve(entry.target); // 한 번만 애니메이션을 실행하도록 관찰 중지
             }
         });
+    }, observerOptions);
+
+    // 각 섹션에 초기 애니메이션 클래스를 추가하고 관찰 시작
+    sections.forEach(section => {
+        // 이미 .hero-section에 있는 애니메이션 클래스와 텍스트 애니메이션을 제외
+        if (!section.classList.contains('hero-section')) {
+            section.classList.add('opacity-0', 'translate-y-10', 'transition-all', 'duration-1000', 'ease-out');
+            sectionObserver.observe(section);
+        }
     });
 
-    // 스크롤 애니메이션 (예시: 특징 섹션 요소들)
-    const featuresSection = document.getElementById('features');
-    if (featuresSection) {
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.1 // 뷰포트의 10%가 보이면 실행
-        };
-
-        const observer = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    // 특징 카드에 애니메이션 클래스 추가
-                    const featureCards = entry.target.querySelectorAll('.transform.hover\\:scale-105');
-                    featureCards.forEach((card, index) => {
-                        // 각 카드에 순차적으로 애니메이션 적용
-                        card.style.animationDelay = `${index * 0.1}s`;
-                        card.classList.add('animate-fade-in-up');
-                    });
-                    observer.unobserve(entry.target); // 한 번만 실행되도록 관찰 중지
-                }
-            });
-        }, observerOptions);
-
-        observer.observe(featuresSection);
+    // hero-section의 텍스트와 버튼에 대한 초기 애니메이션 설정 (HTML에 이미 적용되어 있음)
+    // 이 부분은 HTML에서 'animate-fade-in-up' 및 'delay-XXX' 클래스로 처리되었습니다.
+    // CSS에 다음 클래스를 추가하여 애니메이션을 정의해야 합니다.
+    /*
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
-});
 
+    .animate-fade-in-up {
+        animation: fadeInUp 0.8s ease-out forwards;
+        opacity: 0; // 초기 상태를 숨김
+    }
+
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    .delay-400 { animation-delay: 0.4s; }
+    */
+});
