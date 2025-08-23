@@ -8,10 +8,12 @@
     <!-- Tailwind CSS CDN 포함 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Pretendard';
             background-color: #f8f8f8;
             overflow-x: hidden;
             /* 가로 스크롤 방지 */
@@ -29,6 +31,13 @@
             /* 위로 올릴 양(얼굴 안전구역) */
             --bg-scale: clamp(1, calc(1 + (var(--phone-h) / 1400)), 1.18);
             /* 확대 비율 */
+            /* 화면 크기에 따라 자연스러운 스케일 (모바일 ~ 데스크탑) */
+            --fs-hero-title: clamp(24px, 6vw, 40px);
+            /* 기준 28px → 상/하한 설정 */
+            --fs-hero-sub: clamp(14px, 3.8vw, 20px);
+            /* 보조 문구 */
+            --fs-hero-btn: clamp(16px, 4.2vw, 18px);
+            /* 버튼 텍스트 */
         }
 
         /* 확정시안.jpg에서 샘플링한 색상 */
@@ -106,8 +115,9 @@
         .hero-text-overlay {
             position: relative;
             z-index: 2;
-            max-width: 720px;
-            width: min(90%, 720px);
+            /* 시안 느낌의 좁은 텍스트 폭: 모바일 ~ 데스크톱로 자연 확장 */
+            max-width: clamp(280px, 58vw, 560px);
+            width: min(90%, 560px);
             margin: 0 auto;
             padding: 0 16px;
 
@@ -116,14 +126,67 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
-            gap: 12px;
+            gap: clamp(8px, 1.6vh, 16px);
+        }
+
+        /* 제목 — 모바일 ~ 데스크톱: 28px → 44px 근사, 줄바꿈 밸런스 */
+        .hero-text-overlay h1 {
+            margin: 0;
+            font-weight: 400;
+            color: #fff;
+            white-space: nowrap;
+            /* 줄바꿈 금지 */
+            overflow-wrap: normal;
+            /* 단어 강제 줄바꿈 방지 */
+            line-height: 1.25;
+            /* 360w쯤 ~ 1365w쯤 기준으로 시안 비율에 맞춘 크기 */
+            font-size: clamp(24px, 6.2vw, 44px);
+            margin-bottom: clamp(6px, 1.4vh, 12px);
+        }
+
+        /* 보조문구 — 시안 대비 약 60~70% 크기 */
+        .hero-text-overlay p {
+            margin: 0;
+            color: #fff;
+            line-height: 1.5;
+            font-size: clamp(14px, 1.7vw, 18px);
+            margin-bottom: clamp(14px, 2.2vh, 20px);
+        }
+
+        /* CTA 버튼 — 시안의 비율에 맞춘 패딩/라운드/폰트 크기 */
+        .hero-button {
+            background-color: #AF58AF;
+            color: #fff;
+            font-weight: 700;
+            line-height: 1;
+            border-radius: 10px;
+
+            /* 뷰포트 따라 부드럽게 커지는 패딩 */
+            padding: clamp(10px, 1.2vw, 12px) clamp(18px, 2.6vw, 28px);
+
+            /* reveal 전 초기값은 기존 로직 유지(아래에서 위로 페이드인) */
+            opacity: 0;
+            transform: translateY(10px);
+            transition: transform .2s ease;
+        }
+
+        .hero-button:hover {
+            transform: translateY(0);
+        }
+
+        /* 버튼 내부 아이콘 수평 정렬 안정화 */
+        .hero-button .btn-icon {
+            width: 1.125em;
+            height: 1.125em;
+            display: block;
+            flex-shrink: 0;
         }
 
         /* ===== Scroll reveal for hero texts ===== */
         .reveal {
             opacity: 0;
-            transform: translateY(10vw);
-            transition: opacity 1s ease, transform 1s ease;
+            transform: translateY(5vw);
+            transition: opacity 2.5s ease, transform 1s ease;
             transition-delay: var(--delay, 0ms);
             will-change: opacity, transform;
         }
@@ -131,22 +194,6 @@
         .reveal.show {
             opacity: 1;
             transform: translateY(0);
-        }
-
-        /* 글자 크기/줄간격을 반응형으로 고정 */
-        .hero-text-overlay h1 {
-            margin: 0;
-            font-size: clamp(22px, 3.2vw, 36px);
-            line-height: 1.25;
-            font-weight: 800;
-            color: #fff;
-        }
-
-        .hero-text-overlay p {
-            margin: 0 0 12px;
-            font-size: clamp(14px, 1.6vw, 18px);
-            line-height: 1.5;
-            color: #fff;
         }
 
 
@@ -170,48 +217,39 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, .1);
             user-select: none;
             pointer-events: none;
-
-            /* 애니메이션 시작점을 섹션 하단 “밖”으로 */
-            transform: translateY(140px);
             opacity: 0;
+            transform: translateY(70%);
+            will-change: transform, opacity;
         }
 
-        .phone-image.fadeInUp {
-            animation: phoneRise 2s cubic-bezier(.2, .7, .2, 1) forwards;
+        /* 개별 휴대폰 이미지 크기 조정 */
+        .phone-image {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 24px;
+            /* 기기 모서리에 맞추기 */
+            background: transparent;
+            /* 혹시 기본 흰 배경 깔리지 않도록 */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            /* 은은한 그림자 */
         }
 
-        @keyframes phoneRise {
-            from {
+        /* === 공통: 아래→위 페이드인 애니메이션 === */
+        .fadeInUp {
+            animation: fadeInUp 2.5s cubic-bezier(.2, .5, .2, 1) forwards;
+        }
+
+        @keyframes fadeInUp {
+            0% {
                 opacity: 0;
-                transform: translateY(140px);
+                transform: translateY(70%);
             }
 
-            to {
+            100% {
                 opacity: 1;
                 transform: translateY(0);
             }
-        }
-
-        .hero-button {
-            background-color: #AF58AF;
-            color: #ffffff;
-            /* CTA 핑크색 */
-            padding: 12px 32px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            /* 완전 둥근 */
-            font-weight: 600;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            /* 애니메이션을 위해 opacity 속성 추가 */
-            opacity: 0;
-            /* 초기에 보이지 않도록 설정 */
-            transform: translateY(10px);
-            /* 아래에서 올라오는 효과를 위해 초기 위치 설정 */
-        }
-
-        .hero-button:hover {
-            background-color: #f0f0f0;
-            transform: scale(1.05);
         }
 
         /* 일반 이미지 섹션의 최대 너비 */
@@ -220,18 +258,6 @@
             /* 확정시안 이미지들이 들어갈 적절한 너비 */
         }
 
-        /* 개별 휴대폰 이미지 크기 조정 */
-        .phone-image {
-            width: 200px;
-            /* 작은 화면에서 각 휴대폰 이미지 너비 */
-            height: auto;
-            border-radius: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transform: translateY(140px);
-            /* 섹션 하단 아래쪽에서 시작 */
-            opacity: 0;
-            will-change: transform, opacity;
-        }
 
         /* 후기평가 섹션 타이틀 배경색 */
         .review-section-title-bg {
@@ -258,10 +284,12 @@
         /* 나란히 보이는 이미지 섹션의 배경색 */
         .phone-display-card {
             background-color: #F2EEF2;
-            /* 요청된 배경 색상 */
-            padding: 1.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: clamp(12px, 1.2vw, 16px) clamp(28px, 2.4vw, 36px);
+            /* 내부 여백 제거 */
+            border-radius: 0 !important;
+            /* 둥근 모서리 제거 */
+            box-shadow: none !important;
+            /* 그림자 제거 */
         }
 
         /* Banner Section 1 */
@@ -269,18 +297,18 @@
             background-color: #AF58AF;
             color: white;
             text-align: center;
-            padding: 40px 20px;
+            padding-inline: 20px;
+            padding-block: clamp(24px, 6vw, 72px);
+            /* 상하 패딩: 모바일~데스크톱 */
             /* 패딩 조정 */
             font-size: 2em;
             line-height: 1.5;
             /* 폰트 스타일 적용 */
-            font-family: 'Pretendard', sans-serif;
+            font-family: 'Pretendard';
             font-weight: 500;
             /* SemiBold에 해당 */
             position: relative;
             /* z-index를 위해 추가 */
-            z-index: 5;
-            /* 핸드폰 이미지 아래로 오도록 조정 */
         }
 
         /* Banner Section 2 */
@@ -320,6 +348,43 @@
             margin-top: 15px;
         }
 
+        .stagger-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            align-items: start;
+            gap: clamp(10px, 3.2vw, 32px);
+        }
+
+        .stagger-grid>* {
+            height: 100%;
+        }
+
+        /* 카드 간 위쪽 오프셋(확정시안 느낌) */
+        .stagger-1 {
+            margin-top: clamp(28px, 5vw, 44px);
+        }
+
+        .stagger-2 {
+            margin-top: clamp(8px, 2vw, 20px);
+        }
+
+        /* 폰 이미지를 동일 비율 박스에 담아 안정적으로 스케일 */
+        .phone-mock {
+            width: 100%;
+            max-width: 420px;
+            aspect-ratio: 390 / 844;
+            /* iPhone 비율 근사 */
+            object-fit: contain;
+            display: block;
+            background-color: transparent;
+            /* 배경 투명 처리 */
+            padding: 0;
+            /* 내부 여백 제거 */
+            border-radius: 0;
+            /* 둥근 모서리 제거 */
+            box-shadow: none;
+            /* 그림자 제거 (필요 시 얇은 그림자만 남기기) */
+        }
 
         @media (max-width: 420px) {
             :root {
@@ -331,9 +396,16 @@
                 --bg-shift: clamp(52px, calc(var(--phone-h) * .25), 140px);
             }
 
-            /* 글자 간격 살짝 조정으로 버튼을 위쪽에 유지 */
+            .hero-text-overlay {
+                max-width: min(90%, 320px);
+            }
+
+            .hero-text-overlay h1 {
+                font-size: clamp(28px, 6vw, 28px);
+            }
+
             .hero-text-overlay p {
-                margin-bottom: 10px;
+                font-size: clamp(13px, 4vw, 16px);
             }
 
             .hero-phone {
@@ -366,12 +438,68 @@
                 --bg-scale: clamp(1, calc(1 + (var(--phone-h) / 1600)), 1.22);
             }
 
+            .hero-text-overlay {
+                max-width: 720px;
+                /* 기존 560px → 640px */
+            }
+
+            .hero-text-overlay h1 {
+                font-size: clamp(48px, 3.8vw, 72px);
+                /* 상한을 44px → 52px */
+            }
+
+            .hero-text-overlay p {
+                font-size: clamp(16px, 1.6vw, 22px);
+                /* 보조 문구도 살짝 확대 */
+            }
+
+            .hero-button {
+                padding: clamp(12px, 1.2vw, 16px) clamp(28px, 2.4vw, 36px);
+                font-size: 1.125rem;
+                /* 18px 정도 */
+            }
+
             .hero-phone {
                 bottom: 0px;
                 left: 50%;
                 width: auto;
                 transform: translateX(-50%);
             }
+
+            .stagger-1,
+            .stagger-2 {
+                margin-top: 0 !important;
+            }
+        }
+
+        /* JS가 붙일 초기 상태: 보이지 않게 고정 */
+        .will-reveal {
+            opacity: 0;
+            transform: translateY(28px);
+        }
+
+        /* 섹션 애니메이션 동안 카드 이미지가 따로 움직이지 않게 고정 */
+        .will-reveal .phone-image,
+        .will-reveal .phone-mock {
+            opacity: 1 !important;
+            transform: none !important;
+            animation: none !important;
+            transition: none !important;
+        }
+
+        main section.fadeInUp .phone-image {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+            animation: none !important;
+            /* 섹션 단위만 쓰고, 개별 이미지는 정지 */
+        }
+
+        main section .phone-image,
+        main section .phone-mock {
+            transition: none !important;
+            animation: none !important;
+            opacity: 1 !important;
+            transform: none !important;
         }
     </style>
 </head>
@@ -386,8 +514,8 @@
                 <img src="images/logo.png" alt="The Manner Logo" class="h-8 md:h-10">
                 <span class="text-gray-800 text-xl md:text-2xl font-bold">The Manner</span>
             </div>
-            <a href="#" class="text-custom-purple text-md md:text-lg font-medium hover:underline">
-                <span class="text-purple-highlight">다운로드</span>
+            <a href="#" class="text-md md:text-lg font-pretendard font-bold text-[#AF58AF] hover:text-[#92278F]">
+                <span>다운로드</span>
             </a>
         </div>
     </div>
@@ -397,25 +525,26 @@
         <!-- ✨ 배경 이미지: 섹션의 맨 앞에 배치 -->
         <div class="hero-bg" role="img" aria-label="The Manner hero image"></div>
         <div class="hero-text-overlay">
-            <h1 class="reveal text-2xl md:text-4xl font-extrabold mb-4 text-gray-800" style="--delay:100ms">
+            <h1 class="reveal" style="--delay:100ms">
                 가벼운 만남에 지치셨나요?
             </h1>
-            <p class="reveal text-md md:text-lg mb-8 text-gray-700" style="--delay:250ms">
-                매너가 인연을 만든다<br>선한 남녀들이 모인곳, 더매너
+            <p class="reveal" style="--delay:250ms">
+                매너가 인연을 만든다<br>선한 남녀들이 모인 곳, 더매너
             </p>
-            <button class="reveal hero-button text-lg" style="--delay:450ms">
-                더매너 시작하기 >
+            <button class="reveal hero-button text-lg inline-flex items-center gap-2" style="--delay:350ms ">
+                <span class="btn-label" , style="font-weight: 700; font-family: Pretendard;">더매너 시작하기</span>
+                <img src="images/right_arrow.svg" alt="" class="btn-icon" aria-hidden="true">
             </button>
         </div>
         <div class="hero-phone" aria-hidden="true">
             <img src="./images/iPhone 15 Pro - White flatten.svg" alt="핸드폰 화면"
-                class="phone-image select-none pointer-events-none animate-fade-in-up">
+                class="phone-image select-none pointer-events-none">
         </div>
     </section>
     <!-- Section: 매너·외모·스펙이 검증된 이성과의 만남 -->
     <section class="banner-section-1">
-        매너·외모·스펙이<br>
-        검증된 이성과의 만남
+        <div class="title">매너·외모·스펙이<br>
+            검증된 이성과의 만남</div>
     </section>
     <!-- Content Sections start here, with white background to separate from hero -->
     <main class="bg-white py-16 md:py-24 relative z-10">
@@ -431,17 +560,19 @@
                     </p>
                 </div>
                 <!-- Two images side-by-side -->
-                <div class="flex flex-col md:flex-row justify-center items-stretch gap-8 mt-10">
-                    <div class="flex flex-col items-center phone-display-card"> <!-- Added background color class -->
+                <div class="stagger-grid max-w-[820px] mx-auto mt-10">
+                    <div class="flex flex-col items-center phone-display-card stagger-1">
                         <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">
                             후기평가를 통한<br><span class="text-purple-highlight">비매너</span> 회원 강제 퇴출
                         </h3>
-                        <img src="images/image 22.png" alt="비매너 회원 강제 퇴출" class="phone-image">
+                        <img src="images/image 22.svg" alt="비매너 회원 강제 퇴출" class="phone-image phone-mock">
                     </div>
-                    <div class="flex flex-col items-center phone-display-card"> <!-- Added background color class -->
-                        <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">후기평가를 통한<br><span
-                                class="text-purple-highlight">프사기</span> 회원 강제 퇴출</h3>
-                        <img src="images/image 23.png" alt="프사기 회원 강제 퇴출" class="phone-image">
+
+                    <div class="flex flex-col items-center phone-display-card stagger-2">
+                        <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">
+                            후기평가를 통한<br><span class="text-purple-highlight">프사기</span> 회원 강제 퇴출
+                        </h3>
+                        <img src="images/image 23.svg" alt="프사기 회원 강제 퇴출" class="phone-image phone-mock">
                     </div>
                 </div>
             </section>
@@ -457,17 +588,19 @@
                     </p>
                 </div>
                 <!-- Two images side-by-side -->
-                <div class="flex flex-col md:flex-row justify-center items-stretch gap-8 mt-10">
-                    <div class="flex flex-col items-center phone-display-card"> <!-- Added background color class -->
+                <div class="stagger-grid max-w-[820px] mx-auto mt-10">
+                    <div class="flex flex-col items-center phone-display-card stagger-1">
+                        <!-- Added background color class -->
                         <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">
                             <span class="text-purple-highlight">문신 ·흡연자 </span> 가입 금지
                         </h3>
-                        <img src="images/image 25.png" alt="비매너 회원 강제 퇴출" class="phone-image">
+                        <img src="images/image 25.svg" alt="문신 흡연자 가입 금지" class="phone-image phone-mock">
                     </div>
-                    <div class="flex flex-col items-center phone-display-card"> <!-- Added background color class -->
+                    <div class="flex flex-col items-center phone-display-card stagger-2">
+                        <!-- Added background color class -->
                         <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">커플신청을 통한<br><span
                                 class="text-purple-highlight">다중만남 방지</span></h3>
-                        <img src="images/image 24.png" alt="프사기 회원 강제 퇴출" class="phone-image">
+                        <img src="images/image 24.svg" alt="다중만남 방지" class="phone-image phone-mock">
                     </div>
                 </div>
             </section>
@@ -484,17 +617,19 @@
                     </p>
                 </div>
                 <!-- Two images side-by-side -->
-                <div class="flex flex-col md:flex-row justify-center items-stretch gap-8 mt-10">
-                    <div class="flex flex-col items-center phone-display-card"> <!-- Added background color class -->
+                <div class="stagger-grid max-w-[820px] mx-auto mt-10">
+                    <div class="flex flex-col items-center phone-display-card stagger-1">
+                        <!-- Added background color class -->
                         <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">
                             직업·경제력 <span class="text-purple-highlight">서류검증</span>
                         </h3>
-                        <img src="images/image 27.png" alt="비매너 회원 강제 퇴출" class="phone-image">
+                        <img src="images/image 27.svg" alt="서류검증" class="phone-image phone-mock">
                     </div>
-                    <div class="flex flex-col items-center phone-display-card"> <!-- Added background color class -->
+                    <div class="flex flex-col items-center phone-display-card stagger-2">
+                        <!-- Added background color class -->
                         <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">만남 <span
                                 class="text-purple-highlight">보장</span></h3>
-                        <img src="images/image 26.png" alt="프사기 회원 강제 퇴출" class="phone-image">
+                        <img src="images/image 26.svg" alt="만남 보장" class="phone-image phone-mock">
                     </div>
                 </div>
             </section>
