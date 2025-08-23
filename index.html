@@ -17,6 +17,20 @@
             /* 가로 스크롤 방지 */
         }
 
+        /* ① 공통 변수: 폰 너비/세로비, 얼굴 세이프존(폰 높이에 비례) */
+        :root {
+            /* 폰 크기에서 가져오는 값(이미 너의 코드에 있음) */
+            --phone-w: min(70vw, 360px);
+            --phone-ratio: 2.05;
+            --phone-h: calc(var(--phone-w) * var(--phone-ratio));
+
+            /* ✨ 배경 조절 변수 */
+            --bg-shift: clamp(80px, calc(var(--phone-h) * .36), 280px);
+            /* 위로 올릴 양(얼굴 안전구역) */
+            --bg-scale: clamp(1, calc(1 + (var(--phone-h) / 1400)), 1.18);
+            /* 확대 비율 */
+        }
+
         /* 확정시안.jpg에서 샘플링한 색상 */
         .color-primary-text {
             color: #4a4a4a;
@@ -49,76 +63,150 @@
             /* 연보라색 계열 */
         }
 
+        /* 히어로 배경 이미지 */
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image: url("images/Gemini_Generated_Image.png");
+            background-size: cover;
+            /* 섹션 박스를 항상 꽉 채움 */
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        /* 섹션 자체는 배경색 제거(검은 띠 방지) */
         .hero-section {
-            min-height: 910px;
-            /* 최소 높이 설정 */
             position: relative;
             overflow: hidden;
+            background: transparent;
+            min-height: 100svh;
+            /* ✅ */
+            padding-top: calc(var(--header-h, 64px) + clamp(24px, 6vh, 64px));
+            padding-bottom: calc(var(--phone-h) + clamp(20px, 3vh, 40px));
+            isolation: isolate;
+            /* 🔒 섹션 간 z축 간섭 차단 */
+        }
+
+        /* 상단 가독성 그라데이션(원하면 유지) */
+        .hero-section::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 38%;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, .45), rgba(0, 0, 0, 0));
+            z-index: 1;
+        }
+
+
+        /* ===== 텍스트 박스: 항상 중앙 고정 & 동일 폭 ===== */
+        .hero-text-overlay {
+            position: relative;
+            z-index: 2;
+            max-width: 720px;
+            width: min(90%, 720px);
+            margin: 0 auto;
+            padding: 0 16px;
+
             display: flex;
+            /* ← 중앙 정렬 강제 */
             flex-direction: column;
-            justify-content: flex-start;
-            /* 콘텐츠를 상단에 정렬 */
             align-items: center;
             text-align: center;
-            color: white;
-            /* 텍스트 색상을 흰색으로 변경 */
-            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('images/Gemini_Generated_Image.png');
-            /* 배경 이미지와 오버레이 적용 */
-            background-size: cover;
-            background-position: center;
-            /* 이미지를 중앙에 배치 */
-            background-repeat: no-repeat;
-            /* 핸드폰 이미지를 위한 충분한 하단 공간 확보 */
-            padding-top: 100px;
-            /* padding-bottom: 100px; */
-            /* 핸드폰 이미지가 아래로 튀어나올 공간을 확보 */
+            gap: 12px;
         }
 
-        /* 히어로 섹션 텍스트 및 버튼 스타일 */
-        .hero-text-overlay {
-            /* position: relative; */
-            z-index: 10;
-            margin-top: 0;
-            /* 배경 이미지 내에서 직접 조절되도록 마진 초기화 */
-            /* 텍스트와 버튼이 이미지의 상단에 배치되도록 */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            /* 상단 정렬 */
-            /* height: 100%; */
-            /* 부모 섹션 높이만큼 차지 */
-            padding-top: 50px;
-            /* 이미지 내에서 텍스트 상단 여백 */
+        /* ===== Scroll reveal for hero texts ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(10vw);
+            transition: opacity 1s ease, transform 1s ease;
+            transition-delay: var(--delay, 0ms);
+            will-change: opacity, transform;
         }
 
-        /* 핸드폰 이미지를 섹션 내부로 재배치 */
-        .hero-text-overlay .phone-image {
-            position: relative;
-            /* 상대 위치로 변경 */
-            width: 300px;
-            /* 크기 조정 */
-            margin-top: 50px;
-            /* 텍스트와의 간격 조정 */
+        .reveal.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        .hero-text-overlay h1,
+        /* 글자 크기/줄간격을 반응형으로 고정 */
+        .hero-text-overlay h1 {
+            margin: 0;
+            font-size: clamp(22px, 3.2vw, 36px);
+            line-height: 1.25;
+            font-weight: 800;
+            color: #fff;
+        }
+
         .hero-text-overlay p {
-            color: #ffffff;
-            /* 확정시안의 텍스트 색상 유지 */
+            margin: 0 0 12px;
+            font-size: clamp(14px, 1.6vw, 18px);
+            line-height: 1.5;
+            color: #fff;
+        }
+
+
+        /* ===== 폰: 가운데 하단 고정 (X축만 translate) ===== */
+        .hero-phone {
+            position: absolute;
+            left: 50%;
+            width: clamp(60%, 65%, 100%);
+            /* 가로 기준 중앙 */
+            transform: translateX(-50%);
+            /* 자기 너비의 절반만큼 왼쪽으로 당김 */
+            z-index: 1;
+            /* width: var(--phone-w); */
+        }
+
+        .hero-phone .phone-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, .1);
+            user-select: none;
+            pointer-events: none;
+
+            /* 애니메이션 시작점을 섹션 하단 “밖”으로 */
+            transform: translateY(140px);
+            opacity: 0;
+        }
+
+        .phone-image.fadeInUp {
+            animation: phoneRise 2s cubic-bezier(.2, .7, .2, 1) forwards;
+        }
+
+        @keyframes phoneRise {
+            from {
+                opacity: 0;
+                transform: translateY(140px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .hero-button {
-            background-color: white;
-            color: #E91E63;
+            background-color: #AF58AF;
+            color: #ffffff;
             /* CTA 핑크색 */
             padding: 12px 32px;
             margin-bottom: 10px;
-            border-radius: 9999px;
+            border-radius: 8px;
             /* 완전 둥근 */
             font-weight: 600;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            /* 애니메이션을 위해 opacity 속성 추가 */
+            opacity: 0;
+            /* 초기에 보이지 않도록 설정 */
+            transform: translateY(10px);
+            /* 아래에서 올라오는 효과를 위해 초기 위치 설정 */
         }
 
         .hero-button:hover {
@@ -139,6 +227,10 @@
             height: auto;
             border-radius: 20px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(140px);
+            /* 섹션 하단 아래쪽에서 시작 */
+            opacity: 0;
+            will-change: transform, opacity;
         }
 
         /* 후기평가 섹션 타이틀 배경색 */
@@ -229,48 +321,56 @@
         }
 
 
+        @media (max-width: 420px) {
+            :root {
+                /* 텍스트 블록을 헤더에 더 가깝게(조금 위로) */
+                --text-top-gap: clamp(4px, 3.2vh, 16px);
 
-        @media (min-width: 768px) {
-            .hero-section {
-                height: 700px;
-                /* 중간 화면에서 높이 조정 */
-                padding-top: 100px;
+                /* 배경 Y오프셋 ↓ : 얼굴을 아래로 내려 텍스트와 분리  */
+                /* (숫자를 줄일수록 배경이 '덜' 올라감 → 얼굴이 더 아래로) */
+                --bg-shift: clamp(52px, calc(var(--phone-h) * .25), 140px);
             }
 
-            .hero-text-overlay {
-                padding-top: 80px;
+            /* 글자 간격 살짝 조정으로 버튼을 위쪽에 유지 */
+            .hero-text-overlay p {
+                margin-bottom: 10px;
             }
 
-            .banner-section-2 {
-                flex-direction: row;
-                padding: 30px 50px;
-                justify-content: space-between;
+            .hero-phone {
+                /* width: 55.9vw; */
+                /* width: 218px; */
+                /* 218 / 390 */
+                /* 399.64 / 844 */
+                bottom: 0px;
+                left: 50%;
+                width: clamp(60%, 65%, 100%);
+                transform: translateX(-50%);
+                /* 자기 너비의 절반만큼 왼쪽으로 당김 */
             }
+        }
 
-            .banner-section-2 button {
-                margin-top: 0;
-            }
 
-            .phone-image {
-                width: 250px;
-                /* 중간 화면에서 각 휴대폰 이미지 너비 */
+        /* 중간 구간(태블릿~작은 데스크탑): 모바일↔데스크탑 사이를 자연스럽게 보간 */
+        @media (min-width: 421px) and (max-width: 1023px) {
+            .hero-phone {
+                bottom: 0px;
+                left: 50%;
+                width: auto;
+                transform: translateX(-50%);
             }
         }
 
         @media (min-width: 1024px) {
-            .hero-section {
-                height: 800px;
-                /* 큰 화면에서 높이 조정 */
-                padding-top: 120px;
+            :root {
+                --phone-w: min(40vw, 420px);
+                --bg-scale: clamp(1, calc(1 + (var(--phone-h) / 1600)), 1.22);
             }
 
-            .hero-text-overlay {
-                padding-top: 100px;
-            }
-
-            .phone-image {
-                width: 300px;
-                /* 큰 화면에서 각 휴대폰 이미지 너비 */
+            .hero-phone {
+                bottom: 0px;
+                left: 50%;
+                width: auto;
+                transform: translateX(-50%);
             }
         }
     </style>
@@ -294,21 +394,23 @@
 
     <!-- Hero Section -->
     <section class="hero-section">
+        <!-- ✨ 배경 이미지: 섹션의 맨 앞에 배치 -->
+        <div class="hero-bg" role="img" aria-label="The Manner hero image"></div>
         <div class="hero-text-overlay">
-            <h1 class="text-2xl md:text-4xl font-extrabold mb-4 text-gray-800 animate-fade-in-up">
+            <h1 class="reveal text-2xl md:text-4xl font-extrabold mb-4 text-gray-800" style="--delay:100ms">
                 가벼운 만남에 지치셨나요?
             </h1>
-            <p class="text-md md:text-lg mb-8 opacity-90 text-gray-700 animate-fade-in-up delay-200">
+            <p class="reveal text-md md:text-lg mb-8 text-gray-700" style="--delay:250ms">
                 매너가 인연을 만든다<br>선한 남녀들이 모인곳, 더매너
             </p>
-            <button class="hero-button text-lg animate-fade-in-up delay-400">
+            <button class="reveal hero-button text-lg" style="--delay:450ms">
                 더매너 시작하기 >
             </button>
-            <div class="flex flex-col items-center animate-fade-in-up">
-                <img src="./images/iPhone 15 Pro - White flatten.png" alt="핸드폰 화면" class="phone-image ">
-            </div>
         </div>
-        
+        <div class="hero-phone" aria-hidden="true">
+            <img src="./images/iPhone 15 Pro - White flatten.svg" alt="핸드폰 화면"
+                class="phone-image select-none pointer-events-none animate-fade-in-up">
+        </div>
     </section>
     <!-- Section: 매너·외모·스펙이 검증된 이성과의 만남 -->
     <section class="banner-section-1">
