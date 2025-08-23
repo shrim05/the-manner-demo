@@ -7,6 +7,7 @@
     <title>The Manner</title>
     <!-- Tailwind CSS CDN 포함 -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./js/script.js"></script>
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" as="style" crossorigin
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
@@ -21,23 +22,7 @@
 
         /* ① 공통 변수: 폰 너비/세로비, 얼굴 세이프존(폰 높이에 비례) */
         :root {
-            /* 폰 크기에서 가져오는 값(이미 너의 코드에 있음) */
-            --phone-w: min(70vw, 360px);
-            --phone-ratio: 2.05;
-            --phone-h: calc(var(--phone-w) * var(--phone-ratio));
-
-            /* ✨ 배경 조절 변수 */
-            --bg-shift: clamp(80px, calc(var(--phone-h) * .36), 280px);
-            /* 위로 올릴 양(얼굴 안전구역) */
-            --bg-scale: clamp(1, calc(1 + (var(--phone-h) / 1400)), 1.18);
-            /* 확대 비율 */
-            /* 화면 크기에 따라 자연스러운 스케일 (모바일 ~ 데스크탑) */
-            --fs-hero-title: clamp(24px, 6vw, 40px);
-            /* 기준 28px → 상/하한 설정 */
-            --fs-hero-sub: clamp(14px, 3.8vw, 20px);
-            /* 보조 문구 */
-            --fs-hero-btn: clamp(16px, 4.2vw, 18px);
-            /* 버튼 텍스트 */
+            --vh: 1svh;
         }
 
         /* 확정시안.jpg에서 샘플링한 색상 */
@@ -80,9 +65,10 @@
             pointer-events: none;
             background-image: url("images/Gemini_Generated_Image.png");
             background-size: cover;
-            /* 섹션 박스를 항상 꽉 채움 */
-            background-repeat: no-repeat;
             background-position: center;
+            background-repeat: no-repeat;
+            will-change: transform;
+            transform: translateZ(0);
         }
 
         /* 섹션 자체는 배경색 제거(검은 띠 방지) */
@@ -90,15 +76,18 @@
             position: relative;
             overflow: hidden;
             background: transparent;
-            min-height: 100svh;
-            /* 한 화면 꽉 채우기 */
-            height: 100svh;
-            min-height: 100svh;
-            /* ✅ */
-            padding-top: calc(var(--header-h, 64px) + clamp(24px, 6vh, 64px));
-            padding-bottom: calc(var(--phone-h) + clamp(20px, 3vh, 40px));
+            /* ✅ 한 화면(안전하게 고정): 패딩 포함(box-sizing) */
+            box-sizing: border-box;
+            height: calc(var(--vh) * 100);
+            min-height: calc(var(--vh) * 100);
+            /* 위는 헤더 고려, 아래는 안전영역만 */
+            padding: calc(var(--header-h, 64px) + 16px) 16px max(16px, env(safe-area-inset-bottom));
             isolation: isolate;
-            /* 🔒 섹션 간 z축 간섭 차단 */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            /* 텍스트 위 / 폰 아래 */
+            align-items: center;
         }
 
         /* 상단 가독성 그라데이션(원하면 유지) */
@@ -212,6 +201,7 @@
         .reveal {
             opacity: 0;
             transform: translateY(5vw);
+            visibility: hidden;
             transition: opacity 2.5s ease, transform 1s ease;
             transition-delay: var(--delay, 0ms);
             will-change: opacity, transform;
@@ -220,6 +210,7 @@
         .reveal.show {
             opacity: 1;
             transform: translateY(0);
+            visibility: visible;
         }
 
 
@@ -227,12 +218,10 @@
         .hero-phone {
             position: absolute;
             left: 50%;
-            width: clamp(60%, 65%, 100%);
-            /* 가로 기준 중앙 */
+            bottom: max(8px, env(safe-area-inset-bottom));
             transform: translateX(-50%);
-            /* 자기 너비의 절반만큼 왼쪽으로 당김 */
+            width: clamp(60%, 65%, 100%);
             z-index: 1;
-            /* width: var(--phone-w); */
         }
 
         .hero-phone .phone-image {
@@ -497,15 +486,6 @@
         }
 
         @media (max-width: 420px) {
-            :root {
-                /* 텍스트 블록을 헤더에 더 가깝게(조금 위로) */
-                --text-top-gap: clamp(4px, 3.2vh, 16px);
-
-                /* 배경 Y오프셋 ↓ : 얼굴을 아래로 내려 텍스트와 분리  */
-                /* (숫자를 줄일수록 배경이 '덜' 올라감 → 얼굴이 더 아래로) */
-                --bg-shift: clamp(52px, calc(var(--phone-h) * .25), 140px);
-            }
-
             .hero-text-overlay {
                 max-width: min(90%, 320px);
             }
@@ -572,11 +552,6 @@
         }
 
         @media (min-width: 1024px) {
-            :root {
-                --phone-w: min(40vw, 420px);
-                --bg-scale: clamp(1, calc(1 + (var(--phone-h) / 1600)), 1.22);
-            }
-
             .hero-text-overlay {
                 max-width: 720px;
                 /* 기존 560px → 640px */
@@ -815,7 +790,7 @@
         </div>
     </footer>
 
-    <script src="./js/script.js"></script>
+
 </body>
 
 </html>

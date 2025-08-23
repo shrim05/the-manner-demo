@@ -24,3 +24,5 @@ build/
 .env.production.local
 .venv/
 .parcel-cache/
+
+.vscode

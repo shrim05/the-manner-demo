@@ -1,60 +1,63 @@
+// js/script.js
 document.addEventListener('DOMContentLoaded', () => {
-  // ✅ 히어로 텍스트(기존 유지)
-  const heroTexts = document.querySelectorAll('.hero-text-overlay .reveal');
-  const heroPhoneImg = document.querySelector('.hero-phone .phone-image');
-  const heroObserver = new IntersectionObserver((entries, obs) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('show');
-        obs.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.25 });
-  heroTexts.forEach(el => heroObserver.observe(el));
-
-  if (heroPhoneImg) {
-    const heroPhoneObserver = new IntersectionObserver((entries, obs) => {
+  // 작은 헬퍼: 한 번만 트리거되는 IO
+  const ioOnce = (els, opts, onEnter) => {
+    if (!els || els.length === 0) return;
+    const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
-        if (!heroPhoneImg.classList.contains('fadeInUp')) {
-          heroPhoneImg.style.animationDelay = '140ms';
-          heroPhoneImg.classList.add('fadeInUp');
-          heroPhoneImg.addEventListener('animationend', () => {
-            heroPhoneImg.style.animationDelay = ''; // 깔끔하게 정리
-          }, { once: true });
-        }
-        obs.unobserve(entry.target);
+        onEnter(entry.target, observer);
+        observer.unobserve(entry.target);
       });
-    }, { threshold: 0.2 });
+    }, opts);
+    els.forEach(el => observer.observe(el));
+    return observer;
+  };
 
-    heroPhoneObserver.observe(heroPhoneImg);
+  /* ── HERO ───────────────────────────────────────────── */
+  // 텍스트: 즉시(1% 보이면) 노출 → 플래시 방지
+  const heroTexts = Array.from(document.querySelectorAll('.hero-text-overlay .reveal'));
+  ioOnce(heroTexts, { threshold: 0.01 }, (el) => el.classList.add('show'));
+
+  // 폰: 즉시(1%) 1회 애니메이션
+  const heroPhoneImg = document.querySelector('.hero-phone .phone-image');
+  if (heroPhoneImg) {
+    ioOnce([heroPhoneImg], { threshold: 0.01 }, (img) => {
+      if (!img.classList.contains('fadeInUp')) {
+        img.style.animationDelay = '140ms';
+        img.classList.add('fadeInUp');
+        img.addEventListener('animationend', () => {
+          img.style.animationDelay = '';
+        }, { once: true });
+      }
+    });
   }
 
-  // ✅ 섹션 단위 애니메이션 — hero 제외
-  const sections = document.querySelectorAll('main section, .banner-section-1, .banner-section-2');
-  // 관찰 시작 전에 '초기 숨김 상태' 부여
-  sections.forEach(section => {
-    if (!section.classList.contains('hero-section')) {
-      section.classList.add('will-reveal');
-    }
+  /* ── BANNERS (그대로 빠르게 트리거) ───────────────────── */
+  const banners = Array.from(document.querySelectorAll('.banner-section-1, .banner-section-2'));
+  banners.forEach(el => el.classList.add('will-reveal'));
+  ioOnce(banners, { rootMargin: '0px 0px -10% 0px', threshold: 0.15 }, (el) => {
+    el.classList.remove('will-reveal');
+    el.classList.add('fadeInUp');
   });
 
-  const sectionObserver = new IntersectionObserver((entries, obs) => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-
-      // 초기 상태 제거 후, 한 번만 애니메이션 적용
-      entry.target.classList.remove('will-reveal');
-      if (!entry.target.classList.contains('fadeInUp')) {
-        entry.target.classList.add('fadeInUp');
-      }
-      obs.unobserve(entry.target);
-    });
-  }, { root: null, rootMargin: '0px 0px -10% 0px', threshold: 0.15 });
-
-  sections.forEach(section => {
-    if (!section.classList.contains('hero-section')) {
-      sectionObserver.observe(section);
-    }
+  /* ── MAIN 섹션 (폰 이미지 포함한 섹션만, 35% 보이면) ─── */
+  const mainSections = Array.from(document.querySelectorAll('main section'))
+    .filter(sec => sec.querySelector('.phone-image, .phone-mock'));
+  mainSections.forEach(sec => sec.classList.add('will-reveal'));
+  ioOnce(mainSections, { threshold: 0.55 }, (sec) => {
+    sec.classList.remove('will-reveal');
+    sec.classList.add('fadeInUp');
   });
+
+  /* ── Reduce-motion 대응 ──────────────────────────────── */
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.will-reveal').forEach(el => el.classList.remove('will-reveal'));
+    heroTexts.forEach(el => el.classList.add('show'));
+    if (heroPhoneImg) {
+      heroPhoneImg.classList.remove('fadeInUp');
+      heroPhoneImg.style.opacity = 1;
+      heroPhoneImg.style.transform = 'none';
+    }
+  }
 });
