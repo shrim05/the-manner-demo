@@ -1,5 +1,21 @@
 // js/script.js
 document.addEventListener('DOMContentLoaded', () => {
+  // --- 1회 고정 vh 세팅 (스크롤에 따른 resize는 무시) ---
+  const setVHOnce = () => {
+    const h = (window.visualViewport?.height || window.innerHeight) * 0.01;
+    document.documentElement.style.setProperty('--vh', `${h}px`);
+  };
+  // 최초 페인트 직후 2프레임 뒤 고정
+  requestAnimationFrame(() => requestAnimationFrame(setVHOnce));
+  // iOS bfcache 복귀 시(뒤로가기 등) 다시 고정
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) setVHOnce();
+  });
+
+  // 화면 방향 전환 시에만 재측정 (주소창 개폐로 인한 resize는 무시)
+  window.addEventListener('orientationchange', () => {
+    setTimeout(setVHOnce, 400); // 회전 애니 끝난 뒤
+  });
   // 한 번만 트리거되는 IO 유틸
   const ioOnce = (els, opts, onEnter) => {
     if (!els || els.length === 0) return;
