@@ -91,6 +91,9 @@
             overflow: hidden;
             background: transparent;
             min-height: 100svh;
+            /* 한 화면 꽉 채우기 */
+            height: 100svh;
+            min-height: 100svh;
             /* ✅ */
             padding-top: calc(var(--header-h, 64px) + clamp(24px, 6vh, 64px));
             padding-bottom: calc(var(--phone-h) + clamp(20px, 3vh, 40px));
@@ -159,15 +162,38 @@
             color: #fff;
             font-weight: 700;
             line-height: 1;
-            border-radius: 10px;
-
-            /* 뷰포트 따라 부드럽게 커지는 패딩 */
-            padding: clamp(10px, 1.2vw, 12px) clamp(18px, 2.6vw, 28px);
-
             /* reveal 전 초기값은 기존 로직 유지(아래에서 위로 페이드인) */
             opacity: 0;
             transform: translateY(10px);
             transition: transform .2s ease;
+        }
+
+        /* 버튼 사이즈: 모바일 기본 → 데스크톱 업스케일 */
+        .hero-button--sizing {
+            width: 175px;
+            height: 46px;
+            padding: 12px 24px;
+            /* 좌우 24, 상하 12 */
+            border-radius: 8px;
+            display: inline-flex;
+            /* 텍스트+아이콘 정렬 */
+            align-items: center;
+            justify-content: center;
+            column-gap: 8px;
+            /* gap: 8px */
+            white-space: nowrap;
+            /* 줄바꿈 방지 */
+        }
+
+        /* 버튼 텍스트 크기(선택) – 피그마 느낌 보정 */
+        .hero-button .btn-label {
+            font-family: 'Pretendard', system-ui, -apple-system, sans-serif;
+            font-weight: 700;
+            /* 피그마는 500/600도 있으나 CTA는 700 유지 */
+            font-size: 16px;
+            /* 모바일 */
+            line-height: 1;
+            /* 높이는 패딩/height로 맞춤 */
         }
 
         .hero-button:hover {
@@ -213,7 +239,6 @@
             width: 100%;
             height: auto;
             display: block;
-            border-radius: 20px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, .1);
             user-select: none;
             pointer-events: none;
@@ -227,7 +252,6 @@
             display: block;
             width: 100%;
             height: auto;
-            border-radius: 24px;
             /* 기기 모서리에 맞추기 */
             background: transparent;
             /* 혹시 기본 흰 배경 깔리지 않도록 */
@@ -284,12 +308,24 @@
         /* 나란히 보이는 이미지 섹션의 배경색 */
         .phone-display-card {
             background-color: #F2EEF2;
-            padding: clamp(12px, 1.2vw, 16px) clamp(28px, 2.4vw, 36px);
+            border-radius: 16px;
+            /* ✅ 시안처럼 약간 둥근 모서리 */
+            padding: 16px 12px 8px;
+            /* 위쪽은 살짝 여유, 아래는 최소 */
             /* 내부 여백 제거 */
-            border-radius: 0 !important;
-            /* 둥근 모서리 제거 */
-            box-shadow: none !important;
-            /* 그림자 제거 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .phone-display-card .phone-image {
+            margin-bottom: 0;
+            /* ✅ 불필요한 하단 여백 제거 */
+            padding-bottom: 0;
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 20px;
         }
 
         /* Banner Section 1 */
@@ -309,6 +345,8 @@
             /* SemiBold에 해당 */
             position: relative;
             /* z-index를 위해 추가 */
+            min-height: 238px;
+            align-content: center;
         }
 
         /* Banner Section 2 */
@@ -316,23 +354,28 @@
             background-color: #AF58AF;
             color: white;
             border-radius: 20px;
-            padding: 20px;
+            padding: clamp(20px, 4vw, 40px);
             display: flex;
             flex-direction: column;
-            align-items: center;
+            /* 모바일 기본: 세로 */
+            align-items: flex-start;
             justify-content: center;
             margin: 50px auto;
-            max-width: 90%;
+            max-width: 1200px;
+            /* 데스크톱에서 최대 너비 제한 */
+            width: 90%;
+            /* 항상 뷰포트의 90% 차지 */
+            gap: 16px;
+            /* 텍스트와 버튼 사이 간격 */
+            text-align: left;
         }
 
         .banner-section-2 p {
-            font-size: 1.3em;
+            font-size: clamp(1rem, 2vw, 1.3rem);
             margin: 0;
             line-height: 1.5;
-            /* 폰트 스타일 적용 */
             font-family: 'Pretendard', sans-serif;
             font-weight: 500;
-            /* SemiBold에 해당 */
         }
 
         .banner-section-2 button {
@@ -345,7 +388,6 @@
             border-radius: 5px;
             font-weight: bold;
             white-space: nowrap;
-            margin-top: 15px;
         }
 
         .stagger-grid {
@@ -355,13 +397,9 @@
             gap: clamp(10px, 3.2vw, 32px);
         }
 
-        .stagger-grid>* {
-            height: 100%;
-        }
-
         /* 카드 간 위쪽 오프셋(확정시안 느낌) */
         .stagger-1 {
-            margin-top: clamp(28px, 5vw, 44px);
+            margin-top: clamp(45px, 8vw, 55px);
         }
 
         .stagger-2 {
@@ -380,10 +418,82 @@
             /* 배경 투명 처리 */
             padding: 0;
             /* 내부 여백 제거 */
-            border-radius: 0;
+            border-radius: 24px;
             /* 둥근 모서리 제거 */
             box-shadow: none;
             /* 그림자 제거 (필요 시 얇은 그림자만 남기기) */
+        }
+
+        /* Figma font 스펙 공통 */
+        .figma-p {
+            font-family: 'Pretendard', system-ui, -apple-system, sans-serif;
+            font-weight: 600;
+            /* Medium */
+            font-style: normal;
+            font-size: 16px;
+            /* 모바일 기본 */
+            line-height: 1.4;
+            /* 140% */
+            letter-spacing: -0.002em;
+            /* -0.2% */
+        }
+
+        /* H3: Figma 반영 (모바일/웹) */
+        .figma-h3 {
+            font-family: 'Pretendard', system-ui, -apple-system, sans-serif;
+            font-weight: 600;
+            /* SemiBold */
+            font-style: normal;
+            font-size: 12.08px;
+            /* 모바일 */
+            line-height: 1.4;
+            /* 140% */
+            letter-spacing: -0.002em;
+            /* -0.2% */
+            text-align: center;
+            margin: 0;
+            /* 필요시 Tailwind로 mb 제어 */
+        }
+
+        .figma-list {
+            list-style: disc;
+            padding-left: 1.1em;
+            /* 마커 간격 */
+            margin: 0;
+        }
+
+        .figma-list li {
+            font-family: 'Pretendard', system-ui, -apple-system, sans-serif;
+            font-weight: 600;
+            font-style: normal;
+            /* Figma Medium = 500 */
+            font-size: 16px;
+            /* 모바일 */
+            line-height: 1.4;
+            /* 140% */
+            letter-spacing: -0.002em;
+            /* -0.2% */
+            color: #4b5563;
+            /* text-gray-600 */
+        }
+
+        .figma-p,
+        .figma-list li {
+            word-break: keep-all;
+            /* 한글 단어 중간 쪼개기 방지 */
+            line-break: loose;
+            /* 한국어 줄바꿈 품질 개선(브라우저 지원 시) */
+            text-wrap: balance;
+            /* 지원 브라우저에서 줄 길이 균형 */
+            /* fallback이 필요하면 balance 대신 normal 유지 */
+        }
+
+        /* 강조(span)도 같은 타이포 유지 + 색만 변경 */
+        .figma-h3 .text-purple-highlight {
+            font-weight: 600;
+            letter-spacing: inherit;
+            line-height: inherit;
+            /* color는 기존 .text-purple-highlight 정의 사용(#752875) */
         }
 
         @media (max-width: 420px) {
@@ -430,6 +540,35 @@
                 width: auto;
                 transform: translateX(-50%);
             }
+
+            .banner-section-2 {
+                flex-direction: row;
+                justify-content: space-between;
+                text-align: left;
+            }
+
+            .figma-h3 {
+                font-size: 29.4px;
+            }
+
+            .figma-p {
+                font-size: 24px;
+            }
+
+            .figma-list li {
+                font-size: 24px;
+            }
+
+            .hero-button--sizing {
+                width: 243px;
+                height: 60px;
+            }
+
+            .hero-button .btn-label {
+                font-size: 18px;
+            }
+
+            /* 웹 */
         }
 
         @media (min-width: 1024px) {
@@ -470,6 +609,39 @@
             .stagger-2 {
                 margin-top: 0 !important;
             }
+
+            .banner-section-1 {
+                min-height: 364px;
+            }
+
+            .banner-section-2 {
+                flex-direction: row;
+                justify-content: space-between;
+                text-align: left;
+            }
+
+            .figma-p {
+                font-size: 24px;
+            }
+
+            .figma-h3 {
+                font-size: 29.4px;
+            }
+
+            .figma-list li {
+                font-size: 24px;
+            }
+
+            .hero-button--sizing {
+                width: 243px;
+                height: 60px;
+            }
+
+            .hero-button .btn-label {
+                font-size: 18px;
+            }
+
+            /* 웹 */
         }
 
         /* JS가 붙일 초기 상태: 보이지 않게 고정 */
@@ -531,8 +703,8 @@
             <p class="reveal" style="--delay:250ms">
                 매너가 인연을 만든다<br>선한 남녀들이 모인 곳, 더매너
             </p>
-            <button class="reveal hero-button text-lg inline-flex items-center gap-2" style="--delay:350ms ">
-                <span class="btn-label" , style="font-weight: 700; font-family: Pretendard;">더매너 시작하기</span>
+            <button class="reveal hero-button hero-button--sizing inline-flex items-center gap-2" style="--delay:350ms">
+                <span class="btn-label">더매너 시작하기</span>
                 <img src="images/right_arrow.svg" alt="" class="btn-icon" aria-hidden="true">
             </button>
         </div>
@@ -547,98 +719,92 @@
             검증된 이성과의 만남</div>
     </section>
     <!-- Content Sections start here, with white background to separate from hero -->
-    <main class="bg-white py-16 md:py-24 relative z-10">
-        <div class="container mx-auto px-4">
-            <!-- Section: 후기평가를 통한 비매너/프사기 회원 강제 퇴출 -->
-            <section class="mb-20 md:mb-32 text-center">
-                <div class="mb-10 max-w-2xl mx-auto text-left"> <!-- Changed to text-left -->
-                    <p class="text-gray-600 text-lg md:text-md mb-2">
-                        • 매너점수 하락 누적 시 강제 퇴출
-                    </p>
-                    <p class="text-gray-600 text-lg md:text-md">
-                        • 실물점수(실물과 사진 차이) 하락 누적 시 강제 퇴출
-                    </p>
+    <main class="bg-white py-16 md:py-24 relative z-10 px-4 md:px-8">
+        <!-- Section: 후기평가를 통한 비매너/프사기 회원 강제 퇴출 -->
+        <section class=" mb-20 md:mb-32 text-center">
+            <div class="max-w-[820px] mx-auto mt-10 text-left"> <!-- Changed to text-left -->
+                <ul class="figma-list">
+                    <li>매너점수 하락 누적 시 강제 퇴출</li>
+                    <li>실물점수(실물과 사진 차이) 하락 누적 시 <span class="block sm:inline">강제 퇴출</span></li>
+                </ul>
+            </div>
+            <!-- Two images side-by-side -->
+            <div class="stagger-grid max-w-[820px] mx-auto mt-10">
+                <div class="flex flex-col items-center phone-display-card stagger-1">
+                    <h3 class="figma-h3 mb-4">
+                        후기평가를 통한<br><span class="text-purple-highlight">비매너</span> 회원 강제 퇴출
+                    </h3>
+                    <img src="images/image 22.svg" alt="비매너 회원 강제 퇴출" class="phone-image phone-mock">
                 </div>
-                <!-- Two images side-by-side -->
-                <div class="stagger-grid max-w-[820px] mx-auto mt-10">
-                    <div class="flex flex-col items-center phone-display-card stagger-1">
-                        <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">
-                            후기평가를 통한<br><span class="text-purple-highlight">비매너</span> 회원 강제 퇴출
-                        </h3>
-                        <img src="images/image 22.svg" alt="비매너 회원 강제 퇴출" class="phone-image phone-mock">
-                    </div>
 
-                    <div class="flex flex-col items-center phone-display-card stagger-2">
-                        <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">
-                            후기평가를 통한<br><span class="text-purple-highlight">프사기</span> 회원 강제 퇴출
-                        </h3>
-                        <img src="images/image 23.svg" alt="프사기 회원 강제 퇴출" class="phone-image phone-mock">
-                    </div>
+                <div class="flex flex-col items-center phone-display-card stagger-2">
+                    <h3 class="figma-h3 mb-4">
+                        후기평가를 통한<br><span class="text-purple-highlight">프사기</span> 회원 강제 퇴출
+                    </h3>
+                    <img src="images/image 23.svg" alt="프사기 회원 강제 퇴출" class="phone-image phone-mock">
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- Section: 문신·흡연자 가입 금지 & 커플신청을 통한 다중만남 방지 -->
-            <section class="mb-20 md:mb-32 text-center">
-                <div class="mb-10 max-w-2xl mx-auto text-left">
-                    <p class="text-gray-600 text-lg md:text-md mb-2">
-                        • 문신·흡연자 가입 금지, 기한가입 적발 시 강제 퇴출
-                    </p>
-                    <p class="text-gray-600 text-lg md:text-md">
-                        • 남녀 합의 하 커플 신청 시 새로운 이성 소개 중단
-                    </p>
+        <!-- Section: 문신·흡연자 가입 금지 & 커플신청을 통한 다중만남 방지 -->
+        <section class="mb-20 md:mb-32 text-center">
+            <div class="max-w-[820px] mx-auto mt-10 text-left">
+                <ul class="figma-list">
+                    <li>문신·흡연자 가입 금지, 기한가입 적발 시 <span class="block sm:inline">강제 퇴출</span></li>
+                    <li>남녀 합의 하 커플 신청 시 새로운 이성 <span class="block sm:inline">소개 중단</span></li>
+                </ul>
+            </div>
+            <!-- Two images side-by-side -->
+            <div class="stagger-grid max-w-[820px] mx-auto mt-10">
+                <div class="flex flex-col items-center phone-display-card stagger-1">
+                    <!-- Added background color class -->
+                    <h3 class="figma-h3 mb-4">
+                        <span class="text-purple-highlight">문신·흡연자 </span> 가입 금지
+                    </h3>
+                    <img src="images/image 25.svg" alt="문신 흡연자 가입 금지" class="phone-image phone-mock">
                 </div>
-                <!-- Two images side-by-side -->
-                <div class="stagger-grid max-w-[820px] mx-auto mt-10">
-                    <div class="flex flex-col items-center phone-display-card stagger-1">
-                        <!-- Added background color class -->
-                        <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">
-                            <span class="text-purple-highlight">문신 ·흡연자 </span> 가입 금지
-                        </h3>
-                        <img src="images/image 25.svg" alt="문신 흡연자 가입 금지" class="phone-image phone-mock">
-                    </div>
-                    <div class="flex flex-col items-center phone-display-card stagger-2">
-                        <!-- Added background color class -->
-                        <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">커플신청을 통한<br><span
-                                class="text-purple-highlight">다중만남 방지</span></h3>
-                        <img src="images/image 24.svg" alt="다중만남 방지" class="phone-image phone-mock">
-                    </div>
+                <div class="flex flex-col items-center phone-display-card stagger-2">
+                    <!-- Added background color class -->
+                    <h3 class="figma-h3 mb-4">커플신청을 통한<br><span class="text-purple-highlight">다중만남 방지</span></h3>
+                    <img src="images/image 24.svg" alt="다중만남 방지" class="phone-image phone-mock">
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- Section: 직업·경제력 서류검증 & 만남 보장 -->
+        <!-- Section: 직업·경제력 서류검증 & 만남 보장 -->
 
-            <section class="mb-20 md:mb-32 text-center">
-                <div class="mb-10 max-w-2xl mx-auto text-left">
-                    <p class="text-gray-600 text-lg md:text-md mb-2">
-                        • 원천징수영수증·재직증명서·등기서류 등을 전문인력이 검토
-                    </p>
-                    <p class="text-gray-600 text-lg md:text-md">
-                        • 실제 만남이 성사되지 않을 시 만남권 100% 환급
-                    </p>
+        <section class="mb-20 md:mb-32 text-center">
+            <div class="max-w-[820px] mx-auto mt-10 text-left">
+                <ul class="figma-list">
+                    <li>원천징수영수증·재직증명서·등기서류 등을 <span class="block sm:inline">전문인력이 검토</span></li>
+                    <li>실제 만남이 성사되지 않을 시 만남권 <span class="block sm:inline">100% 환급</span></li>
+                </ul>
+            </div>
+            <!-- Two images side-by-side -->
+            <div class="stagger-grid max-w-[820px] mx-auto mt-10">
+                <div class="flex flex-col items-center phone-display-card stagger-1">
+                    <!-- Added background color class -->
+                    <h3 class="figma-h3 mb-4">
+                        직업·경제력 <span class="text-purple-highlight">서류검증</span>
+                    </h3>
+                    <img src="images/image 27.svg" alt="서류검증" class="phone-image phone-mock">
                 </div>
-                <!-- Two images side-by-side -->
-                <div class="stagger-grid max-w-[820px] mx-auto mt-10">
-                    <div class="flex flex-col items-center phone-display-card stagger-1">
-                        <!-- Added background color class -->
-                        <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">
-                            직업·경제력 <span class="text-purple-highlight">서류검증</span>
-                        </h3>
-                        <img src="images/image 27.svg" alt="서류검증" class="phone-image phone-mock">
-                    </div>
-                    <div class="flex flex-col items-center phone-display-card stagger-2">
-                        <!-- Added background color class -->
-                        <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">만남 <span
-                                class="text-purple-highlight">보장</span></h3>
-                        <img src="images/image 26.svg" alt="만남 보장" class="phone-image phone-mock">
-                    </div>
+                <div class="flex flex-col items-center phone-display-card stagger-2">
+                    <!-- Added background color class -->
+                    <h3 class="figma-h3 mb-4"><span class="text-purple-highlight">만남 보장</span></h3>
+                    <img src="images/image 26.svg" alt="만남 보장" class="phone-image phone-mock">
                 </div>
-            </section>
-        </div>
+            </div>
+        </section>
+
     </main>
 
     <!-- Call to Action Footer Section -->
     <section class="banner-section-2">
-        <p>매너를 갖춘 분이라면 지금 바로 인연을 찾아보세요!</p>
+        <p>
+            <span class="block md:inline">매너를 갖추신 분이라면</span>
+            <span class="block md:inline">지금 바로 인연을 찾아보세요!</span>
+        </p>
         <button>더매너 앱 다운로드 ></button>
     </section>
 

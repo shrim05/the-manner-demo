@@ -57,7 +57,4 @@ document.addEventListener('DOMContentLoaded', () => {
       sectionObserver.observe(section);
     }
   });
-
-  // ⛔️ 개별 이미지 관찰(폰/위젯) 제거 — 섹션 단위로만 애니메이션
-  // (기존 phoneObserver, widgetObserver 관련 코드 전부 삭제)
 });
