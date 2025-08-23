@@ -77,8 +77,11 @@
             background: transparent;
             /* ✅ 한 화면(안전하게 고정): 패딩 포함(box-sizing) */
             box-sizing: border-box;
-            height: calc(var(--vh) * 100);
-            min-height: calc(var(--vh) * 100);
+            height: 100vh;
+            /* 가장 넓은 호환 폴백 */
+            height: 100svh;
+            /* 주소창 펼친 높이(덜 흔들림) */
+            min-height: 100svh;
             /* 위는 헤더 고려, 아래는 안전영역만 */
             padding: calc(var(--header-h, 64px) + 16px) 16px max(16px, env(safe-area-inset-bottom));
             isolation: isolate;
@@ -87,6 +90,14 @@
             justify-content: space-between;
             /* 텍스트 위 / 폰 아래 */
             align-items: center;
+        }
+
+        @supports (height: 100dvh) {
+            .hero-section {
+                height: 100dvh;
+                /* 최신 브라우저에서 동적 뷰포트 */
+                min-height: 100dvh;
+            }
         }
 
         /* 상단 가독성 그라데이션(원하면 유지) */
@@ -232,6 +243,8 @@
             opacity: 0;
             transform: translateY(70%);
             will-change: transform, opacity;
+            backface-visibility: hidden;
+            transform: translateZ(0);
         }
 
         /* 개별 휴대폰 이미지 크기 조정 */
@@ -790,6 +803,6 @@
 
 
 </body>
-<script src="./js/script.js"></script>
+<script src="./js/script.js" defer></script>
 
 </html>
