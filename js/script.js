@@ -78,9 +78,44 @@ document.addEventListener('DOMContentLoaded', () => {
     el.classList.add('fadeInUp');
   });
 
-  /* ── MAIN 섹션 ─────────────────────────────────────── */
+  /* ── MAIN 섹션: 섹션 단위 등장 ───────────────── */
+  /* ── LIST → GRID 순차등장 섹션(자동 감지) ────────────────── */
+  // ul.figma-list 와 .stagger-grid를 동시에 가지는 섹션 = 대상
+  const stagedSections = Array.from(document.querySelectorAll('main section'))
+    .filter(sec => sec.querySelector('ul.figma-list .reveal') && sec.querySelector('.stagger-grid'));
+
+  // GRID는 먼저 숨겨두기 (섹션 통째 애니와 분리)
+  stagedSections.forEach(sec => {
+    const grid = sec.querySelector('.stagger-grid');
+    if (grid && !grid.classList.contains('will-reveal')) grid.classList.add('will-reveal');
+  });
+
+  ioOnce(stagedSections, { threshold: 0.25 }, (sec) => {
+    // 1) 리스트 먼저 등장
+    const liEls = Array.from(sec.querySelectorAll('ul.figma-list .reveal'));
+    liEls.forEach(el => el.classList.add('show'));
+
+    // li의 --delay가 있어도, GRID는 "최대 0.9초 내"에 등장
+    const maxDelay = liEls.reduce((m, el) => {
+      const raw = getComputedStyle(el).getPropertyValue('--delay') || '0ms';
+      const ms = parseFloat(raw);
+      return Math.max(m, isNaN(ms) ? 0 : ms);
+    }, 0);
+    const EXTRA = 300;           // 페인트 여유
+    const WAIT = Math.min(900, maxDelay + EXTRA); // ✅ 0.9s 이내 보장
+
+    const grid = sec.querySelector('.stagger-grid');
+    if (grid) {
+      setTimeout(() => {
+        grid.classList.remove('will-reveal');
+        grid.classList.add('fadeInUp'); // 기존 효과 재사용
+      }, WAIT);
+    }
+  });
+
+  /* ── MAIN 섹션(기존 전체 섹션 등장)에서 staged 제외 ───────── */
   const mainSections = Array.from(document.querySelectorAll('main section'))
-    .filter(sec => sec.querySelector('.phone-image, .phone-mock'));
+    .filter(sec => sec.querySelector('.phone-image, .phone-mock') && !stagedSections.includes(sec));
   mainSections.forEach(sec => sec.classList.add('will-reveal'));
   ioOnce(mainSections, { threshold: 0.55 }, (sec) => {
     sec.classList.remove('will-reveal');
@@ -90,11 +125,22 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ── Reduce-motion 대응 ───────────────────────────── */
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     document.querySelectorAll('.will-reveal').forEach(el => el.classList.remove('will-reveal'));
-    heroTexts.forEach(el => el.classList.add('show'));
+    // hero
+    document.querySelectorAll('.hero-text-overlay .reveal').forEach(el => el.classList.add('show'));
+    const heroPhoneImg = document.querySelector('.hero-phone .phone-image');
     if (heroPhoneImg) {
       heroPhoneImg.classList.remove('fadeInUp');
       heroPhoneImg.style.opacity = 1;
       heroPhoneImg.style.transform = 'none';
     }
+    // staged grid 즉시 표시
+    stagedSections.forEach(sec => {
+      const grid = sec.querySelector('.stagger-grid');
+      if (grid) {
+        grid.classList.remove('fadeInUp');
+        grid.style.opacity = 1;
+        grid.style.transform = 'none';
+      }
+    });
   }
 });

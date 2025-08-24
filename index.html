@@ -2,6 +2,7 @@
 <html lang="ko">
 
 <head>
+    <link rel="preload" as="image" href="images/iPhone 15 Pro - White flatten.png" fetchpriority="high">
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
@@ -46,15 +47,13 @@
             /* CTA 버튼 텍스트 색상 */
         }
 
-        /* 메인 섹션 배경색 번갈아 적용 */
-        main section:nth-of-type(odd) {
-            background-color: #ffffff;
-            /* 밝은 회색 또는 흰색 */
-        }
-
-        main section:nth-of-type(even) {
-            background-color: #FAFAFA;
-            /* 연보라색 계열 */
+        .logo-fixed-size {
+            width: 160px;
+            /* Figma width */
+            height: 25px;
+            /* Figma height */
+            object-fit: contain;
+            /* 비율 깨짐 방지 */
         }
 
         /* 히어로 배경 이미지 */
@@ -127,24 +126,26 @@
         /* 제목 — 모바일 ~ 데스크톱: 28px → 44px 근사, 줄바꿈 밸런스 */
         .hero-text-overlay h1 {
             margin: 0;
-            font-weight: 400;
+            font-family: 'Pretendard', system-ui, -apple-system, sans-serif;
+            font-weight: 500;
             color: #fff;
             white-space: nowrap;
             /* 줄바꿈 금지 */
             overflow-wrap: normal;
             /* 단어 강제 줄바꿈 방지 */
-            line-height: 1.25;
+            line-height: 1.4;
             /* 360w쯤 ~ 1365w쯤 기준으로 시안 비율에 맞춘 크기 */
-            font-size: clamp(24px, 6.2vw, 44px);
+            font-size: clamp(24px, 6.2vw, 48px);
             margin-bottom: clamp(6px, 1.4vh, 12px);
         }
+
 
         /* 보조문구 — 시안 대비 약 60~70% 크기 */
         .hero-text-overlay p {
             margin: 0;
             color: #fff;
             line-height: 1.5;
-            font-size: clamp(14px, 1.7vw, 18px);
+            font-size: clamp(20px, 1.7vw, 20px);
             margin-bottom: clamp(14px, 2.2vh, 20px);
         }
 
@@ -438,7 +439,7 @@
             font-weight: 600;
             /* SemiBold */
             font-style: normal;
-            font-size: 12.08px;
+            font-size: 13px;
             /* 모바일 */
             line-height: 1.4;
             /* 140% */
@@ -500,7 +501,7 @@
             }
 
             .hero-text-overlay p {
-                font-size: clamp(13px, 4vw, 16px);
+                font-size: clamp(16px, 4vw, 16px);
             }
 
             .hero-phone {
@@ -511,7 +512,7 @@
                 bottom: 0px;
                 left: 50%;
                 /* width: clamp(60%, 45%, 100%); */
-                width: 190px;
+                width: 218px;
                 transform: translateX(-50%);
                 /* 자기 너비의 절반만큼 왼쪽으로 당김 */
             }
@@ -524,7 +525,7 @@
             .hero-phone {
                 bottom: 0px;
                 left: 50%;
-                width: clamp(320px, 42vw, 560px);
+                width: 218px;
                 transform: translateX(-50%);
             }
 
@@ -565,7 +566,7 @@
             }
 
             .hero-text-overlay h1 {
-                font-size: clamp(48px, 3.8vw, 72px);
+                font-size: clamp(48px, 3.8vw, 48px);
                 /* 상한을 44px → 52px */
             }
 
@@ -664,9 +665,7 @@
     <div class="bg-white py-4 shadow-sm absolute top-0 left-0 w-full z-30">
         <div class="container mx-auto px-4 w-full flex items-center justify-between">
             <div class="flex items-center space-x-2">
-                <!-- 확정시안.jpg의 The Manner 로고 - 실제 로고 이미지로 교체 필요 -->
-                <img src="images/logo.png" alt="The Manner Logo" class="h-8 md:h-10">
-                <span class="text-gray-800 text-xl md:text-2xl font-bold">The Manner</span>
+                <img src="images/logo.png" alt="The Manner Logo" class="logo-fixed-size">
             </div>
             <a href="#" class="text-md md:text-lg font-pretendard font-bold text-[#AF58AF] hover:text-[#92278F]">
                 <span>다운로드</span>
@@ -687,11 +686,12 @@
             </p>
             <button class="reveal hero-button hero-button--sizing inline-flex items-center gap-2" style="--delay:350ms">
                 <span class="btn-label">더매너 시작하기</span>
-                <img src="images/right_arrow.svg" alt="" class="btn-icon" aria-hidden="true">
+                <img src="images/right_arrow.svg" alt="" class="btn-icon" aria-hidden="true" loading="eager"
+                    decoding="async" fetchpriority="high">
             </button>
         </div>
         <div class="hero-phone" aria-hidden="true">
-            <img src="./images/iPhone 15 Pro - White flatten.svg" alt="핸드폰 화면"
+            <img src="./images/iPhone 15 Pro - White flatten.png" alt="핸드폰 화면"
                 class="phone-image select-none pointer-events-none">
         </div>
     </section>
@@ -702,79 +702,84 @@
     </section>
     <!-- Content Sections start here, with white background to separate from hero -->
     <main class="bg-white py-16 md:py-24 relative z-10 px-4 md:px-8">
-        <!-- Section: 후기평가를 통한 비매너/프사기 회원 강제 퇴출 -->
-        <section class=" mb-20 md:mb-32 text-center">
+        <section class=" mb-20 md:mb-32 text-center" data-stagger="list-then-grid">
+            <!-- Section: 후기평가를 통한 비매너/프사기 회원 강제 퇴출 -->
             <div class="max-w-[820px] mx-auto mt-10 text-left"> <!-- Changed to text-left -->
                 <ul class="figma-list">
-                    <li>매너점수 하락 누적 시 강제 퇴출</li>
-                    <li>실물점수(실물과 사진 차이) 하락 누적 시 <span class="block sm:inline">강제 퇴출</span></li>
+                    <li class="reveal" style="--delay:150ms">매너점수 하락 누적 시 강제 퇴출</li>
+                    <li class="reveal" style="--delay:250ms">실물점수(실물과 사진 차이) 하락 누적 시 <span class="block sm:inline">강제
+                            퇴출</span></li>
                 </ul>
             </div>
             <!-- Two images side-by-side -->
-            <div class="stagger-grid max-w-[820px] mx-auto mt-10">
+            <div class="stagger-grid max-w-[820px] mx-auto mt-10 will-reveal">
                 <div class="flex flex-col items-center phone-display-card stagger-1">
                     <h3 class="figma-h3 mb-4">
                         후기평가를 통한<br><span class="text-purple-highlight">비매너</span> 회원 강제 퇴출
                     </h3>
-                    <img src="images/image 22.svg" alt="비매너 회원 강제 퇴출" class="phone-image phone-mock">
+                    <img src="images/image 22.png" alt="비매너 회원 강제 퇴출" class="phone-image phone-mock">
                 </div>
 
                 <div class="flex flex-col items-center phone-display-card stagger-2">
                     <h3 class="figma-h3 mb-4">
                         후기평가를 통한<br><span class="text-purple-highlight">프사기</span> 회원 강제 퇴출
                     </h3>
-                    <img src="images/image 23.svg" alt="프사기 회원 강제 퇴출" class="phone-image phone-mock">
+                    <img src="images/image 23.png" alt="프사기 회원 강제 퇴출" class="phone-image phone-mock">
                 </div>
             </div>
         </section>
 
         <!-- Section: 문신·흡연자 가입 금지 & 커플신청을 통한 다중만남 방지 -->
-        <section class="mb-20 md:mb-32 text-center">
+        <section class=" mb-20 md:mb-32 text-center" data-stagger="list-then-grid">
             <div class="max-w-[820px] mx-auto mt-10 text-left">
                 <ul class="figma-list">
-                    <li>문신·흡연자 가입 금지, 기한가입 적발 시 <span class="block sm:inline">강제 퇴출</span></li>
-                    <li>남녀 합의 하 커플 신청 시 새로운 이성 <span class="block sm:inline">소개 중단</span></li>
+                    <li class="reveal" style="--delay:250ms">문신·흡연자 가입 금지, 기한가입 적발 시 <span class="block sm:inline">강제
+                            퇴출</span></li>
+                    <li class="reveal" style="--delay:250ms">남녀 합의 하 커플 신청 시 새로운 이성 <span class="block sm:inline">소개
+                            중단</span></li>
                 </ul>
             </div>
             <!-- Two images side-by-side -->
-            <div class="stagger-grid max-w-[820px] mx-auto mt-10">
+            <div class="stagger-grid max-w-[820px] mx-auto mt-10 will-reveal">
                 <div class="flex flex-col items-center phone-display-card stagger-1">
                     <!-- Added background color class -->
                     <h3 class="figma-h3 mb-4">
                         <span class="text-purple-highlight">문신·흡연자 </span> 가입 금지
                     </h3>
-                    <img src="images/image 25.svg" alt="문신 흡연자 가입 금지" class="phone-image phone-mock">
+                    <img src="images/image 25.png" alt="문신 흡연자 가입 금지" class="phone-image phone-mock">
                 </div>
                 <div class="flex flex-col items-center phone-display-card stagger-2">
                     <!-- Added background color class -->
                     <h3 class="figma-h3 mb-4">커플신청을 통한<br><span class="text-purple-highlight">다중만남 방지</span></h3>
-                    <img src="images/image 24.svg" alt="다중만남 방지" class="phone-image phone-mock">
+                    <img src="images/image 24.png" alt="다중만남 방지" class="phone-image phone-mock">
                 </div>
             </div>
         </section>
 
         <!-- Section: 직업·경제력 서류검증 & 만남 보장 -->
 
-        <section class="mb-20 md:mb-32 text-center">
+        <section class=" mb-20 md:mb-32 text-center" data-stagger="list-then-grid">
             <div class="max-w-[820px] mx-auto mt-10 text-left">
                 <ul class="figma-list">
-                    <li>원천징수영수증·재직증명서·등기서류 등을 <span class="block sm:inline">전문인력이 검토</span></li>
-                    <li>실제 만남이 성사되지 않을 시 만남권 <span class="block sm:inline">100% 환급</span></li>
+                    <li class="reveal" style="--delay:250ms">원천징수영수증·재직증명서·등기서류 등을 <span class="block sm:inline">전문인력이
+                            검토</span></li>
+                    <li class="reveal" style="--delay:350ms">실제 만남이 성사되지 않을 시 만남권 <span class="block sm:inline">100%
+                            환급</span></li>
                 </ul>
             </div>
             <!-- Two images side-by-side -->
-            <div class="stagger-grid max-w-[820px] mx-auto mt-10">
+            <div class="stagger-grid max-w-[820px] mx-auto mt-10 will-reveal">
                 <div class="flex flex-col items-center phone-display-card stagger-1">
                     <!-- Added background color class -->
                     <h3 class="figma-h3 mb-4">
                         직업·경제력 <span class="text-purple-highlight">서류검증</span>
                     </h3>
-                    <img src="images/image 27.svg" alt="서류검증" class="phone-image phone-mock">
+                    <img src="images/image 27.png" alt="서류검증" class="phone-image phone-mock">
                 </div>
                 <div class="flex flex-col items-center phone-display-card stagger-2">
                     <!-- Added background color class -->
                     <h3 class="figma-h3 mb-4"><span class="text-purple-highlight">만남 보장</span></h3>
-                    <img src="images/image 26.svg" alt="만남 보장" class="phone-image phone-mock">
+                    <img src="images/image 26.png" alt="만남 보장" class="phone-image phone-mock">
                 </div>
             </div>
         </section>
