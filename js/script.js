@@ -42,9 +42,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // 첫 페인트가 끝난 뒤 적용 (double rAF)
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        heroTexts.forEach(el => el.classList.add('show'));
+        // heroTexts 각각 딜레이
+        heroTexts.forEach((el, idx) => {
+          el.style.transitionDelay = `${idx * 400}ms`; // 순차 등장
+          el.classList.add('show');
+        });
         if (heroPhoneImg && !heroPhoneImg.classList.contains('fadeInUp')) {
-          heroPhoneImg.style.animationDelay = '140ms';
+          heroPhoneImg.style.animationDelay = '1500ms';
           heroPhoneImg.classList.add('fadeInUp');
           heroPhoneImg.addEventListener('animationend', () => {
             heroPhoneImg.style.animationDelay = '';
