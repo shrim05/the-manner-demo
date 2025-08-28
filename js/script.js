@@ -95,28 +95,33 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   ioOnce(stagedSections, { threshold: 0.25 }, (sec) => {
-    // 1) 리스트 먼저 등장
     const liEls = Array.from(sec.querySelectorAll('ul.figma-list .reveal'));
-    liEls.forEach(el => el.classList.add('show'));
 
-    // li의 --delay가 있어도, GRID는 "최대 0.9초 내"에 등장
-    const maxDelay = liEls.reduce((m, el) => {
-      const raw = getComputedStyle(el).getPropertyValue('--delay') || '0ms';
-      const ms = parseFloat(raw);
-      return Math.max(m, isNaN(ms) ? 0 : ms);
-    }, 0);
-    const EXTRA = 300;           // 페인트 여유
-    const WAIT = Math.min(900, maxDelay + EXTRA); // ✅ 0.9s 이내 보장
-
-    const grid = sec.querySelector('.stagger-grid');
-    if (grid) {
-      setTimeout(() => {
-        grid.classList.remove('will-reveal');
-        grid.classList.add('fadeInUp'); // 기존 효과 재사용
-      }, WAIT);
-    }
+    const startList = () => {
+      liEls.forEach(el => el.classList.add('show'));
+      // 이하 GRID 타이밍 계산은 기존 로직 유지
+      const maxDelay = liEls.reduce((m, el) => {
+        const raw = getComputedStyle(el).getPropertyValue('--delay') || '0ms';
+        const ms = parseFloat(raw);
+        return Math.max(m, isNaN(ms) ? 0 : ms);
+      }, 0);
+      const EXTRA = 300;
+      const WAIT = Math.min(900, maxDelay + EXTRA);
+      const grid = sec.querySelector('.stagger-grid');
+      if (grid) {
+        setTimeout(() => {
+          grid.classList.remove('will-reveal');
+          grid.classList.add('fadeInUp');
+        }, WAIT);
+      }
+    };
+    // 폰트 준비를 최대 300ms까지만 기다린 뒤 시작
+    const fontReady = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+    Promise.race([
+      fontReady,
+      new Promise(res => setTimeout(res, 300))
+    ]).then(startList);
   });
-
   /* ── MAIN 섹션(기존 전체 섹션 등장)에서 staged 제외 ───────── */
   const mainSections = Array.from(document.querySelectorAll('main section'))
     .filter(sec => sec.querySelector('.phone-image, .phone-mock') && !stagedSections.includes(sec));
