@@ -10,14 +10,22 @@
     <!-- Tailwind CSS CDN 포함 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="./css/style.css">
-    <link rel="preload" as="font" href="./fonts/pretendard/variable/woff2/PretendardVariable.woff2" type="font/woff2">
-    <link rel="stylesheet" href="./fonts/pretendard/variable/pretendardvariable.css">
+    <link rel="preload" as="font" href="./fonts/pretendard/variable/woff2/PretendardVariable.woff2" type="font/woff2"
+        crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        @font-face {
+            font-family: 'Pretendard Variable';
+            font-weight: 45 920;
+            font-style: normal;
+            font-display: swap;
+            src: url('./fonts/pretendard/variable/woff2/PretendardVariable.woff2') format('woff2-variations');
+        }
+
         /* ① 공통 변수: 폰 너비/세로비, 얼굴 세이프존(폰 높이에 비례) */
         :root {
             --vh: 1svh;
-            --font-stack: 'Pretendard', 'Inter', sans-serif, system-ui, -apple-system, ;
+            --font-stack: 'Pretendard', 'Inter', system-ui, -apple-system, sans-serif;
         }
 
         body {
