@@ -95,32 +95,42 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   ioOnce(stagedSections, { threshold: 0.25 }, (sec) => {
-    const liEls = Array.from(sec.querySelectorAll('ul.figma-list .reveal'));
-
     const startList = () => {
-      liEls.forEach(el => el.classList.add('show'));
-      // 이하 GRID 타이밍 계산은 기존 로직 유지
-      const maxDelay = liEls.reduce((m, el) => {
-        const raw = getComputedStyle(el).getPropertyValue('--delay') || '0ms';
-        const ms = parseFloat(raw);
-        return Math.max(m, isNaN(ms) ? 0 : ms);
-      }, 0);
-      const EXTRA = 300;
-      const WAIT = Math.min(900, maxDelay + EXTRA);
-      const grid = sec.querySelector('.stagger-grid');
-      if (grid) {
-        setTimeout(() => {
-          grid.classList.remove('will-reveal');
-          grid.classList.add('fadeInUp');
-        }, WAIT);
-      }
+      const liEls = Array.from(sec.querySelectorAll('ul.figma-list .reveal'));
+      // 요소의 `offsetHeight` 속성을 읽어 강제로 리플로우 발생
+      Promise.all([document.fonts.ready])
+        .then(() => {
+          liEls.forEach(el => {
+            el.offsetHeight;
+            el.classList.add('show');
+          });
+          // 이하 GRID 타이밍 계산은 기존 로직 유지
+          const maxDelay = liEls.reduce((m, el) => {
+            const raw = getComputedStyle(el).getPropertyValue('--delay') || '0ms';
+            const ms = parseFloat(raw);
+            return Math.max(m, isNaN(ms) ? 0 : ms);
+          }, 0);
+          const EXTRA = 300;
+          const WAIT = Math.min(900, maxDelay + EXTRA);
+          const grid = sec.querySelector('.stagger-grid');
+          if (grid) {
+            setTimeout(() => {
+              grid.classList.remove('will-reveal');
+              grid.classList.add('fadeInUp');
+            }, WAIT);
+          }
+        })
+        .catch(err => {
+          // 폰트 로딩 실패 시에도 애니메이션을 시작하여 사용자 경험을 해치지 않음
+          console.error("Font loading failed, proceeding with animation.", err);
+          liEls.forEach(el => el.classList.add('show'));
+          const grid = sec.querySelector('.stagger-grid');
+          if (grid) {
+            grid.classList.remove('will-reveal');
+            grid.classList.add('fadeInUp');
+          }
+        })
     };
-    // 폰트 준비를 최대 300ms까지만 기다린 뒤 시작
-    const fontReady = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
-    Promise.race([
-      fontReady,
-      new Promise(res => setTimeout(res, 300))
-    ]).then(startList);
   });
   /* ── MAIN 섹션(기존 전체 섹션 등장)에서 staged 제외 ───────── */
   const mainSections = Array.from(document.querySelectorAll('main section'))
