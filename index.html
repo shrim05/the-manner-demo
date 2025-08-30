@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         @font-face {
-            font-family: 'Pretendard Variable';
+            font-family: 'Pretendard';
             font-weight: 45 920;
             font-style: normal;
             font-display: swap;
@@ -481,6 +481,14 @@
             /* text-gray-600 */
         }
 
+        .figma-list .fake-li {
+            display: none !important;
+            list-style: none !important;
+            /* 점도 숨기기 */
+            margin: 0;
+            padding: 0;
+        }
+
         .figma-p,
         .figma-list li {
             word-break: keep-all;
@@ -715,6 +723,8 @@
             <!-- Section: 후기평가를 통한 비매너/프사기 회원 강제 퇴출 -->
             <div class="max-w-[820px] mx-auto mt-10 text-left"> <!-- Changed to text-left -->
                 <ul class="figma-list">
+                    <!-- Safari FOIT 버그 회피용 더미 li -->
+                    <li class="reveal fake-li" aria-hidden="true">Safari FOIT 버그 회피용 더미 li</li>
                     <li class="reveal" style="--delay:100ms">매너점수 하락 누적 시 강제 퇴출</li>
                     <li class="reveal" style="--delay:200ms">실물점수(실물과 사진 차이) 하락 누적 시 <span class="block sm:inline">강제
                             퇴출</span></li>
